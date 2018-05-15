@@ -220,3 +220,14 @@ function ValidarFormatoArchivo() {
          $("#@Html.IdFor(m=>m.cartaPeticion)").removeClass("validarErrorCampos");
      }
 });
+
+
+/* Función que suma o resta días a una fecha, si el parámetro
+   días es negativo restará los días*/
+function sumarDias(fecha, dias){
+  fecha.setDate(fecha.getDate() + dias);
+  return fecha;
+}
+
+var d = new Date();
+console.log(sumarDias(d, -5));
