@@ -231,3 +231,76 @@ function sumarDias(fecha, dias){
 
 var d = new Date();
 console.log(sumarDias(d, -5));
+
+
+/******************************* Geolocation **************************************************/
+    var apiGeolocationSuccess = function (position) {
+        obj.Latitude = position.coords.latitude.toString();
+        obj.Longitude = position.coords.longitude.toString();
+        alert("API geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+
+    };
+
+    var tryAPIGeolocation = function () {
+        jQuery.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyD1nmGDKgRwfG_D89d-y5shzn4_WdnJvOg", function (success) {
+            apiGeolocationSuccess({ coords: { latitude: success.location.lat, longitude: success.location.lng } });
+        })
+            .fail(function (err) {
+                alert("API Geolocation error! \n\n" + err);
+            });
+    };
+
+    var browserGeolocationSuccess = function (position) {
+        alert("Browser geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+    };
+
+    var browserGeolocationFail = function (error) {
+        switch (error.code) {
+            case error.TIMEOUT:
+                alert("Browser geolocation error !\n\nTimeout.");
+                break;
+            case error.PERMISSION_DENIED:
+                if (error.message.indexOf("Only secure origins are allowed") == 0) {
+                    tryAPIGeolocation();
+                }
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Browser geolocation error !\n\nPosition unavailable.");
+                break;
+        }
+    };
+
+    var tryGeolocation = function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                browserGeolocationSuccess,
+                browserGeolocationFail,
+                { maximumAge: 50000, timeout: 20000, enableHighAccuracy: true });
+        }
+    };
+
+    tryGeolocation();
+
+    function geoFindMe() {
+        var output = document.getElementById("out");
+
+        if (!navigator.geolocation) {
+            output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+            return;
+        }
+
+        function success(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
+        }
+
+        function error() {
+            output.innerHTML = "Unable to retrieve your location";
+        }
+
+        output.innerHTML = "<p>Locating…</p>";
+
+        navigator.geolocation.getCurrentPosition(success, error);
+    }
